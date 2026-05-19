@@ -1,0 +1,449 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--inn-blue:#0A2E5A;--inn-cyan:#00AEEF;--inn-green:#1D9E75;--inn-orange:#F4A823;--inn-red:#E24B4A;--inn-purple:#534AB7;}
+.dash{padding:1rem;}
+.header{display:flex;align-items:center;gap:10px;margin-bottom:1.2rem;padding-bottom:0.9rem;border-bottom:2.5px solid #00AEEF;}
+.logo-box{width:38px;height:38px;background:#0A2E5A;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-box span{color:#00AEEF;font-weight:700;font-size:12px;letter-spacing:1px;}
+.header h1{font-size:16px;font-weight:500;color:var(--color-text-primary);}
+.header p{font-size:11px;color:var(--color-text-secondary);}
+.tabs{display:flex;gap:4px;margin-bottom:1rem;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:0;}
+.tab{padding:6px 14px;font-size:13px;cursor:pointer;border:none;background:transparent;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab.active{color:#00AEEF;border-bottom:2px solid #00AEEF;font-weight:500;}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center;}
+.filters select,.filters input{font-size:12px;padding:5px 9px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);}
+.btn-sm{font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;background:transparent;border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary);}
+.btn-sm:hover{background:var(--color-background-secondary);}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:1rem;}
+.kpi{background:var(--color-background-secondary);border-radius:8px;padding:0.8rem 0.9rem;}
+.kpi .lbl{font-size:11px;color:var(--color-text-secondary);margin-bottom:3px;}
+.kpi .val{font-size:21px;font-weight:500;}
+.kpi .sub{font-size:11px;color:var(--color-text-secondary);margin-top:2px;}
+.kpi .sub.up{color:#1D9E75;} .kpi .sub.warn{color:#F4A823;} .kpi .sub.down{color:#E24B4A;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:0.9rem 1rem;}
+.card h3{font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:0.7rem;text-transform:uppercase;letter-spacing:.5px;}
+.cw{position:relative;width:100%;}
+.leg{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:7px;font-size:11px;color:var(--color-text-secondary);}
+.leg span{display:flex;align-items:center;gap:3px;}
+.dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.tbl{width:100%;border-collapse:collapse;font-size:11px;}
+.tbl th{text-align:left;padding:5px 7px;color:var(--color-text-secondary);font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer;white-space:nowrap;}
+.tbl td{padding:5px 7px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);}
+.tbl tr:hover td{background:var(--color-background-secondary);}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.b-activo{background:#E1F5EE;color:#0F6E56;} .b-revisar{background:#FAEEDA;color:#854F0B;} .b-pendiente{background:#E6F1FB;color:#185FA5;} .b-vencido{background:#FCEBEB;color:#A32D2D;} .b-vigente{background:#E1F5EE;color:#0F6E56;} .b-porvencer{background:#FAEEDA;color:#854F0B;} .b-sinlic{background:#F1EFE8;color:#5F5E5A;}
+.pred-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px;}
+.pred-name{width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--color-text-secondary);}
+.pred-track{flex:1;height:14px;background:var(--color-background-secondary);border-radius:6px;overflow:hidden;}
+.pred-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;}
+.pred-fill span{font-size:9px;font-weight:500;color:#fff;}
+.pred-pct{width:35px;text-align:right;font-weight:500;}
+.pane{display:none;} .pane.active{display:block;}
+.scroll-x{overflow-x:auto;}
+@media(max-width:580px){.g2,.g3{grid-template-columns:1fr;}}
+</style>
+
+<div class="dash">
+<h2 class="sr-only">Dashboard empresarial Innova ITC — clientes, contratos y proyectos con análisis predictivo</h2>
+
+<div class="header">
+  <div class="logo-box"><span>ITC</span></div>
+  <div>
+    <h1>Dashboard Clientes — Innova ITC</h1>
+    <p>169 clientes · 110 contratos · 79 proyectos/licencias &nbsp;|&nbsp; Actualizado mayo 2026</p>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showPane('resumen')"><i class="ti ti-layout-dashboard" aria-hidden="true"></i> Resumen general</button>
+  <button class="tab" onclick="showPane('contratos')"><i class="ti ti-file-text" aria-hidden="true"></i> Contratos</button>
+  <button class="tab" onclick="showPane('proyectos')"><i class="ti ti-calendar" aria-hidden="true"></i> Proyectos / Licencias</button>
+  <button class="tab" onclick="showPane('clientes')"><i class="ti ti-users" aria-hidden="true"></i> Clientes</button>
+  <button class="tab" onclick="showPane('predictivo')"><i class="ti ti-brain" aria-hidden="true"></i> Predictivo</button>
+</div>
+
+<!-- RESUMEN -->
+<div class="pane active" id="pane-resumen">
+  <div class="kpis">
+    <div class="kpi"><div class="lbl">Total clientes</div><div class="val">169</div><div class="sub up">↑ Base activa</div></div>
+    <div class="kpi"><div class="lbl">Contratos activos</div><div class="val">96</div><div class="sub up">87% del total</div></div>
+    <div class="kpi"><div class="lbl">Contratos a revisar</div><div class="val">13</div><div class="sub warn">⚠ Requieren atención</div></div>
+    <div class="kpi"><div class="lbl">Licencias vigentes</div><div class="val">30</div><div class="sub up">38% del total</div></div>
+    <div class="kpi"><div class="lbl">Licencias por vencer</div><div class="val">24</div><div class="sub warn">⚠ Próximas a vencer</div></div>
+    <div class="kpi"><div class="lbl">Sin licencia</div><div class="val">20</div><div class="sub down">Proyectos sin asignar</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h3>Estado de contratos (110 total)</h3>
+      <div class="leg" id="leg-c-estado"></div>
+      <div class="cw" style="height:180px;"><canvas id="ch-cestado" role="img" aria-label="Estado contratos">Activo 96, Revisar 13, Pendiente 1.</canvas></div>
+    </div>
+    <div class="card">
+      <h3>Estado de licencias — proyectos (79 total)</h3>
+      <div class="leg" id="leg-p-estado"></div>
+      <div class="cw" style="height:180px;"><canvas id="ch-pestado" role="img" aria-label="Estado licencias proyectos">Vigente 30, Por vencer 24, Sin licencia 20, Vencido 5.</canvas></div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h3>Clientes por operadora (169 total)</h3>
+      <div class="leg" id="leg-op-c"></div>
+      <div class="cw" style="height:170px;"><canvas id="ch-opclientes" role="img" aria-label="Clientes por operadora">ENTEL 117, ON 26, BITEL 18, CLARO 8.</canvas></div>
+    </div>
+    <div class="card">
+      <h3>Contratos por proveedor (110 total)</h3>
+      <div class="leg" id="leg-op-ct"></div>
+      <div class="cw" style="height:170px;"><canvas id="ch-opcontrato" role="img" aria-label="Contratos por proveedor">ENTEL 50, BITEL 25, GTD 18, CLARO 14, WIN 2.</canvas></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:10px;">
+    <h3>Altas de clientes por mes</h3>
+    <div class="leg"><span><span class="dot" style="background:#00AEEF;"></span> Nuevos clientes por mes</span></div>
+    <div class="cw" style="height:160px;"><canvas id="ch-altas" role="img" aria-label="Altas mensuales">Tendencia de incorporación de clientes.</canvas></div>
+  </div>
+</div>
+
+<!-- CONTRATOS -->
+<div class="pane" id="pane-contratos">
+  <div class="filters">
+    <select id="f-ct-prov" onchange="renderContratos()"><option value="">Todos los proveedores</option><option>ENTEL</option><option>BITEL</option><option>GTD</option><option>CLARO</option><option>WIN</option></select>
+    <select id="f-ct-est" onchange="renderContratos()"><option value="">Todos los estados</option><option>Activo</option><option>Revisar</option><option>Pendiente</option></select>
+    <input type="text" id="f-ct-q" placeholder="Buscar cliente..." oninput="renderContratos()" style="min-width:160px;">
+    <button class="btn-sm" onclick="document.getElementById('f-ct-prov').value='';document.getElementById('f-ct-est').value='';document.getElementById('f-ct-q').value='';renderContratos();"><i class="ti ti-refresh" aria-hidden="true"></i> Limpiar</button>
+    <span style="font-size:11px;color:var(--color-text-secondary);margin-left:4px;">Mostrando <strong id="ct-count">0</strong> contratos</span>
+  </div>
+  <div class="scroll-x"><table class="tbl"><thead><tr>
+    <th onclick="sortCT('id')">ID</th>
+    <th onclick="sortCT('cliente')">Cliente</th>
+    <th>Contrato / OC</th>
+    <th onclick="sortCT('fecha_inicio')">Inicio</th>
+    <th onclick="sortCT('fecha_fin')">Vencimiento</th>
+    <th onclick="sortCT('estado')">Estado</th>
+    <th onclick="sortCT('proveedor')">Proveedor</th>
+    <th>Días restantes</th>
+  </tr></thead><tbody id="ct-body"></tbody></table></div>
+</div>
+
+<!-- PROYECTOS -->
+<div class="pane" id="pane-proyectos">
+  <div class="filters">
+    <select id="f-pry-op" onchange="renderProyectos()"><option value="">Todas operadoras</option><option>ENTEL</option><option>BITEL</option><option>ON</option></select>
+    <select id="f-pry-lic" onchange="renderProyectos()"><option value="">Todos los estados</option><option>Vigente</option><option>Por vencer</option><option>Vencido</option><option>sin licencia</option></select>
+    <input type="text" id="f-pry-q" placeholder="Buscar cliente..." oninput="renderProyectos()" style="min-width:160px;">
+    <button class="btn-sm" onclick="document.getElementById('f-pry-op').value='';document.getElementById('f-pry-lic').value='';document.getElementById('f-pry-q').value='';renderProyectos();"><i class="ti ti-refresh" aria-hidden="true"></i> Limpiar</button>
+    <span style="font-size:11px;color:var(--color-text-secondary);margin-left:4px;">Mostrando <strong id="pry-count">0</strong> proyectos</span>
+  </div>
+  <div class="scroll-x"><table class="tbl"><thead><tr>
+    <th>Código</th>
+    <th onclick="sortPRY('cliente')">Cliente</th>
+    <th onclick="sortPRY('operadora')">Operadora</th>
+    <th onclick="sortPRY('inicio_soporte')">Inicio soporte</th>
+    <th onclick="sortPRY('fin_soporte')">Fin soporte</th>
+    <th onclick="sortPRY('fin_licencia')">Fin licencia</th>
+    <th onclick="sortPRY('estado_licencia')">Estado licencia</th>
+    <th>Días lic.</th>
+  </tr></thead><tbody id="pry-body"></tbody></table></div>
+</div>
+
+<!-- CLIENTES -->
+<div class="pane" id="pane-clientes">
+  <div class="filters">
+    <select id="f-cl-op" onchange="renderClientes()"><option value="">Todas operadoras</option><option>ENTEL</option><option>ON</option><option>BITEL</option><option>CLARO</option></select>
+    <input type="text" id="f-cl-q" placeholder="Buscar cliente o ID..." oninput="renderClientes()" style="min-width:160px;">
+    <button class="btn-sm" onclick="document.getElementById('f-cl-op').value='';document.getElementById('f-cl-q').value='';renderClientes();"><i class="ti ti-refresh" aria-hidden="true"></i> Limpiar</button>
+    <span style="font-size:11px;color:var(--color-text-secondary);margin-left:4px;">Mostrando <strong id="cl-count">0</strong> clientes</span>
+  </div>
+  <div class="scroll-x"><table class="tbl"><thead><tr>
+    <th onclick="sortCL('id')">ID</th>
+    <th onclick="sortCL('nombre')">Cliente</th>
+    <th onclick="sortCL('operadora')">Operadora</th>
+    <th onclick="sortCL('fecha_alta')">Fecha de alta</th>
+  </tr></thead><tbody id="cl-body"></tbody></table></div>
+</div>
+
+<!-- PREDICTIVO -->
+<div class="pane" id="pane-predictivo">
+  <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:1rem;padding:8px 12px;background:var(--color-background-secondary);border-radius:8px;">
+    <i class="ti ti-info-circle" aria-hidden="true"></i> Modelo predictivo basado en: días restantes al vencimiento, estado del contrato/licencia y patrón de renovación.
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h3>Top contratos con mayor riesgo de no renovación</h3>
+      <div id="pred-contratos"></div>
+    </div>
+    <div class="card">
+      <h3>Top licencias con mayor riesgo de vencimiento</h3>
+      <div id="pred-licencias"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:10px;">
+    <h3>Vencimientos próximos 12 meses — contratos</h3>
+    <div class="cw" style="height:170px;"><canvas id="ch-venc" role="img" aria-label="Vencimientos de contratos por mes">Contratos que vencen en los próximos meses.</canvas></div>
+  </div>
+
+  <div class="card">
+    <h3>Proyectos: vencimiento de soporte por mes</h3>
+    <div class="cw" style="height:160px;"><canvas id="ch-sop" role="img" aria-label="Vencimientos de soporte por mes">Proyectos cuyo soporte vence por mes.</canvas></div>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const TODAY = new Date('2026-05-18');
+const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+const DB = {"clientes":[{"id":"PRY-00040","nombre":"MUICIPALIDAD DE HUAMANGA","operadora":"BITEL","fecha_alta":"2024-06-07"},{"id":"PRY-00149","nombre":"PRONATEL CADS","operadora":"CLARO","fecha_alta":"2024-06-21"},{"id":"PRY-00444","nombre":"PRISONTEC","operadora":"ENTEL","fecha_alta":"2024-08-14"},{"id":"PRY-00017","nombre":"MEDELCO","operadora":"ENTEL","fecha_alta":"2024-09-23"},{"id":"PRY-00019","nombre":"SUNAFIL","operadora":"CLARO","fecha_alta":"2024-10-30"},{"id":"PRY-00146","nombre":"JV ASCENSORES","operadora":"ENTEL","fecha_alta":"2024-10-31"},{"id":"PRY-00057","nombre":"PRONIED","operadora":"ON","fecha_alta":"2024-11-05"},{"id":"PRY-00059","nombre":"CHINA ROAD AND BRIDGE CORPORATION SUCURSAL PERU","operadora":"ENTEL","fecha_alta":"2024-11-06"},{"id":"PRY-00050","nombre":"IRTP","operadora":"CLARO","fecha_alta":"2024-11-28"},{"id":"PRY-00006","nombre":"SAN MARCOS","operadora":"ON","fecha_alta":"2024-12-01"},{"id":"PRY-00300","nombre":"FINANCOOP","operadora":"ENTEL","fecha_alta":"2024-12-05"},{"id":"PRY-00235","nombre":"IMPULSA365","operadora":"ENTEL","fecha_alta":"2024-12-11"},{"id":"PRY-00049","nombre":"WIN ENDPOINT-CENTRAL","operadora":"ON","fecha_alta":"2024-12-15"},{"id":"PRY-00015","nombre":"AEROPUERTOS ANDINOS","operadora":"ENTEL","fecha_alta":"2024-12-16"},{"id":"PRY-00053","nombre":"ALICIA GUZMAN DE CASTILLO","operadora":"ENTEL","fecha_alta":"2024-12-18"},{"id":"PRY-00058","nombre":"INFRASTRUCTURE & DATABASE CONSULTING","operadora":"ENTEL","fecha_alta":"2024-12-18"},{"id":"PRY-00133","nombre":"BUSINESS TECHNOLOGY","operadora":"ENTEL","fecha_alta":"2024-12-20"},{"id":"PRY-00055","nombre":"LIMA TOURS (CUSCO)","operadora":"ENTEL","fecha_alta":"2024-12-25"},{"id":"PRY-00145","nombre":"I PEX-PERU","operadora":"ENTEL","fecha_alta":"2024-12-30"},{"id":"PRY-00054","nombre":"SUPEFINA PERU","operadora":"ENTEL","fecha_alta":"2025-01-09"},{"id":"PRY-00551","nombre":"INVERSIONES CREPES 02 - ROUTERS","operadora":"ENTEL","fecha_alta":"2025-01-14"},{"id":"PRY-00209","nombre":"MUNICIPALIDAD DE LA PUNTA","operadora":"ENTEL","fecha_alta":"2025-01-15"},{"id":"PRY-00042","nombre":"INPE","operadora":"ON","fecha_alta":"2025-01-16"},{"id":"PRY-00020","nombre":"SIOM PERU","operadora":"ENTEL","fecha_alta":"2025-01-22"},{"id":"PRY-00045","nombre":"ELECTROCENTRO","operadora":"ON","fecha_alta":"2025-01-23"},{"id":"PRY-00060","nombre":"UNIVERSIDAD CIENTIFICA","operadora":"ENTEL","fecha_alta":"2025-01-28"},{"id":"PRY-00046","nombre":"TAILOY","operadora":"ENTEL","fecha_alta":"2025-01-28"},{"id":"PRY-00244","nombre":"VM Audiocodes","operadora":"CLARO","fecha_alta":"2025-01-30"},{"id":"PRY-00255","nombre":"ACRUTA & TAPIA","operadora":"ENTEL","fecha_alta":"2025-02-03"},{"id":"PRY-00043","nombre":"ESSALUD ANCASH","operadora":"ON","fecha_alta":"2025-02-04"},{"id":"PRY-00044","nombre":"MINISTERIO DE CULTURA","operadora":"ON","fecha_alta":"2025-02-04"},{"id":"PRY-00063","nombre":"LINDE PERU","operadora":"ENTEL","fecha_alta":"2025-02-05"},{"id":"PRY-00256","nombre":"BANCO SANTANDER","operadora":"ENTEL","fecha_alta":"2025-02-17"},{"id":"PRY-00064","nombre":"CHINA ROAD","operadora":"ENTEL","fecha_alta":"2025-02-20"},{"id":"PRY-00065","nombre":"AGRICOLA DON RICARDO","operadora":"ENTEL","fecha_alta":"2025-02-24"},{"id":"PRY-00066","nombre":"IDC CONSULTING","operadora":"ENTEL","fecha_alta":"2025-03-03"},{"id":"PRY-00266","nombre":"TOC ASOCIADOS","operadora":"ENTEL","fecha_alta":"2025-03-13"},{"id":"PRY-00268","nombre":"AEROPUERTOS ANDINOS PROY","operadora":"ENTEL","fecha_alta":"2025-03-20"},{"id":"PRY-00270","nombre":"GRUPO LA PATRONA","operadora":"ENTEL","fecha_alta":"2025-04-02"},{"id":"PRY-00271","nombre":"JS INDUSTRIAL","operadora":"ENTEL","fecha_alta":"2025-04-15"},{"id":"PRY-00272","nombre":"CIMEC INGENIEROS","operadora":"ENTEL","fecha_alta":"2025-04-22"},{"id":"PRY-00273","nombre":"SANTIAGO RODRIGUEZ","operadora":"ENTEL","fecha_alta":"2025-04-23"},{"id":"PRY-00274","nombre":"JOSPAC IMPORT","operadora":"ENTEL","fecha_alta":"2025-04-24"},{"id":"PRY-00275","nombre":"FINANCOOP PROY","operadora":"ENTEL","fecha_alta":"2025-04-24"},{"id":"PRY-00276","nombre":"ZUZUNAGA ABOGADOS","operadora":"ENTEL","fecha_alta":"2025-04-28"},{"id":"PRY-00277","nombre":"JS INDUSTRIAL 2","operadora":"ENTEL","fecha_alta":"2025-04-29"},{"id":"PRY-00278","nombre":"CIRCULO A1 SCHOOL","operadora":"ENTEL","fecha_alta":"2025-04-30"},{"id":"PRY-00279","nombre":"FIESTAS RAMIREZ","operadora":"ENTEL","fecha_alta":"2025-04-30"},{"id":"PRY-00280","nombre":"SIOM PERU PROY","operadora":"ENTEL","fecha_alta":"2025-05-07"},{"id":"PRY-00281","nombre":"DIESTRA","operadora":"ENTEL","fecha_alta":"2025-05-12"},{"id":"PRY-00282","nombre":"MUNICIPALIDAD LA PUNTA PROY","operadora":"ENTEL","fecha_alta":"2025-05-20"},{"id":"PRY-00283","nombre":"MICHELL Y CIA","operadora":"ENTEL","fecha_alta":"2025-05-20"},{"id":"PRY-00284","nombre":"LIMA TOURS PROY","operadora":"ENTEL","fecha_alta":"2025-02-06"},{"id":"PRY-00285","nombre":"HAWK LOGISTICS","operadora":"ENTEL","fecha_alta":"2025-06-12"},{"id":"PRY-00286","nombre":"SUN PHARMACEUTICAL","operadora":"ENTEL","fecha_alta":"2025-06-26"},{"id":"PRY-00287","nombre":"ENVASE LOS PINOS","operadora":"ENTEL","fecha_alta":"2025-06-26"},{"id":"PRY-00288","nombre":"VIAJES ROSARIO FLOREZ","operadora":"ENTEL","fecha_alta":"2025-07-05"},{"id":"PRY-00289","nombre":"DISTRIBUIDORA PUMA","operadora":"ENTEL","fecha_alta":"2025-07-22"},{"id":"PRY-00290","nombre":"SOLGAS","operadora":"ENTEL","fecha_alta":"2025-01-10"},{"id":"PRY-00291","nombre":"ORBES AGRICOLA","operadora":"ENTEL","fecha_alta":"2025-08-20"},{"id":"PRY-00292","nombre":"ELECTRO REGSA","operadora":"ENTEL","fecha_alta":"2025-08-20"},{"id":"PRY-00293","nombre":"ALIGNET","operadora":"ENTEL","fecha_alta":"2025-08-28"},{"id":"PRY-00294","nombre":"XELYNTOR","operadora":"ENTEL","fecha_alta":"2025-08-29"},{"id":"PRY-00295","nombre":"SAVAR AGENTES ADUANA","operadora":"ENTEL","fecha_alta":"2025-09-14"},{"id":"PRY-00296","nombre":"CHECHRIZA","operadora":"ENTEL","fecha_alta":"2025-09-19"},{"id":"PRY-00297","nombre":"GABEL","operadora":"ENTEL","fecha_alta":"2025-09-23"},{"id":"PRY-00298","nombre":"REPRESENTACIONES MARTIN","operadora":"ENTEL","fecha_alta":"2025-09-23"},{"id":"PRY-00299","nombre":"AROMAS DEL PERU","operadora":"ENTEL","fecha_alta":"2025-09-26"},{"id":"PRY-00301","nombre":"EL HUEVO DE ORO","operadora":"ENTEL","fecha_alta":"2025-10-10"},{"id":"PRY-00302","nombre":"SOCIEDAD AMIGOS MECANICOS","operadora":"ENTEL","fecha_alta":"2025-10-16"},{"id":"PRY-00303","nombre":"ASCENSORES TELEFONIA","operadora":"ENTEL","fecha_alta":"2025-10-24"},{"id":"PRY-00304","nombre":"ARBRAYSS LASER","operadora":"ENTEL","fecha_alta":"2025-11-11"},{"id":"PRY-00305","nombre":"KRISTAL GROUP","operadora":"ENTEL","fecha_alta":"2025-11-14"},{"id":"PRY-00306","nombre":"LA VIGA","operadora":"ENTEL","fecha_alta":"2025-11-19"},{"id":"PRY-00307","nombre":"COPISERVICE","operadora":"ENTEL","fecha_alta":"2025-11-20"},{"id":"PRY-00308","nombre":"RENTAEQUIPOS LEASING","operadora":"ENTEL","fecha_alta":"2025-11-20"},{"id":"PRY-00309","nombre":"SENCICO MONIT","operadora":"ENTEL","fecha_alta":"2025-11-26"},{"id":"PRY-00310","nombre":"VANGUARD LOGISTICS","operadora":"ENTEL","fecha_alta":"2025-11-27"},{"id":"PRY-00311","nombre":"TACTICAL IT","operadora":"ENTEL","fecha_alta":"2025-12-16"},{"id":"PRY-00312","nombre":"LAT PERU","operadora":"ENTEL","fecha_alta":"2025-12-29"},{"id":"PRY-00313","nombre":"CAMPO VERDE","operadora":"BITEL","fecha_alta":"2026-01-01"},{"id":"PRY-00314","nombre":"AURORA","operadora":"BITEL","fecha_alta":"2024-06-02"},{"id":"PRY-00315","nombre":"ESSALUD","operadora":"BITEL","fecha_alta":"2024-03-15"},{"id":"PRY-00316","nombre":"LOAYZA","operadora":"BITEL","fecha_alta":"2026-01-30"},{"id":"PRY-00317","nombre":"UNH","operadora":"BITEL","fecha_alta":"2024-10-11"},{"id":"PRY-00318","nombre":"MININTER","operadora":"BITEL","fecha_alta":"2023-10-03"},{"id":"PRY-00319","nombre":"CORPAC","operadora":"BITEL","fecha_alta":"2025-04-15"},{"id":"PRY-00320","nombre":"PRONATEL PIURA","operadora":"BITEL","fecha_alta":"2023-09-01"},{"id":"PRY-00321","nombre":"PRONATEL EPAD","operadora":"BITEL","fecha_alta":"2025-09-01"},{"id":"PRY-00322","nombre":"RODASUR","operadora":"BITEL","fecha_alta":"2026-02-02"},{"id":"PRY-00323","nombre":"CORPAC 1024","operadora":"BITEL","fecha_alta":"2025-07-14"},{"id":"PRY-00324","nombre":"MIGRACIONES","operadora":"BITEL","fecha_alta":"2025-03-28"},{"id":"PRY-00325","nombre":"DIREICAJ PNP","operadora":"ON","fecha_alta":"2025-05-09"},{"id":"PRY-00326","nombre":"DIRIS LIMA NORTE","operadora":"ON","fecha_alta":"2025-11-05"},{"id":"PRY-00327","nombre":"DIRIS LIMA SUR","operadora":"ON","fecha_alta":"2025-05-07"},{"id":"PRY-00328","nombre":"FONAFE","operadora":"ON","fecha_alta":"2025-10-09"},{"id":"PRY-00329","nombre":"INDECOPI","operadora":"ON","fecha_alta":"2024-04-15"},{"id":"PRY-00330","nombre":"INDECOPI 2","operadora":"ON","fecha_alta":"2025-07-17"},{"id":"PRY-00331","nombre":"INGEMMET","operadora":"ON","fecha_alta":"2025-03-11"},{"id":"PRY-00332","nombre":"INSUR","operadora":"ON","fecha_alta":"2025-04-25"},{"id":"PRY-00333","nombre":"MEF","operadora":"ON","fecha_alta":"2024-04-23"},{"id":"PRY-00334","nombre":"MINEDU GTD","operadora":"ON","fecha_alta":"2025-09-10"},{"id":"PRY-00335","nombre":"PNP","operadora":"ON","fecha_alta":"2024-09-27"},{"id":"PRY-00336","nombre":"PROGRAMA PAIS","operadora":"ON","fecha_alta":"2024-09-02"},{"id":"PRY-00337","nombre":"SAT","operadora":"ON","fecha_alta":"2024-01-18"},{"id":"PRY-00338","nombre":"SEDAPAL","operadora":"ON","fecha_alta":"2025-11-06"},{"id":"PRY-00339","nombre":"SIMA","operadora":"ON","fecha_alta":"2024-12-09"},{"id":"PRY-00340","nombre":"TELEATENTO","operadora":"ON","fecha_alta":"2025-06-12"},{"id":"PRY-00341","nombre":"UNIDAD EJECUTORA","operadora":"ON","fecha_alta":"2025-05-13"},{"id":"PRY-00342","nombre":"UNITELS","operadora":"ON","fecha_alta":"2024-09-02"},{"id":"PRY-00343","nombre":"PACHAMAMA GOURMET","operadora":"CLARO","fecha_alta":"2024-08-01"},{"id":"PRY-00344","nombre":"ONP","operadora":"CLARO","fecha_alta":"2025-02-01"},{"id":"PRY-00345","nombre":"SUNAFIL CLARO","operadora":"CLARO","fecha_alta":"2025-02-01"},{"id":"PRY-00346","nombre":"IRTP CLARO","operadora":"CLARO","fecha_alta":"2025-03-01"},{"id":"PRY-00347","nombre":"ONP 2","operadora":"CLARO","fecha_alta":"2025-04-01"},{"id":"PRY-00348","nombre":"GARCIA BRAGAGNINI","operadora":"CLARO","fecha_alta":"2025-06-01"},{"id":"PRY-00349","nombre":"ASOC JULIACA","operadora":"CLARO","fecha_alta":"2025-08-01"},{"id":"PRY-00350","nombre":"EMAPAT","operadora":"CLARO","fecha_alta":"2025-08-01"},{"id":"PRY-00351","nombre":"SAGITARIDOS","operadora":"CLARO","fecha_alta":"2025-08-01"},{"id":"PRY-00352","nombre":"SUCAMEC","operadora":"CLARO","fecha_alta":"2025-10-01"},{"id":"PRY-00353","nombre":"SAN GABAN","operadora":"CLARO","fecha_alta":"2026-03-01"},{"id":"PRY-00354","nombre":"UNIVERSIDAD ANTUNEZ","operadora":"CLARO","fecha_alta":"2026-04-01"},{"id":"PRY-00355","nombre":"PRONATEL CLARO","operadora":"CLARO","fecha_alta":"2026-05-01"},{"id":"PRY-00356","nombre":"MUÑOZ NAJAR","operadora":"CLARO","fecha_alta":"2026-05-01"},{"id":"PRY-00357","nombre":"RENIEC","operadora":"ON","fecha_alta":"2026-02-16"},{"id":"PRY-00358","nombre":"UNFV","operadora":"ON","fecha_alta":"2026-01-19"},{"id":"PRY-00359","nombre":"VERISURE","operadora":"ENTEL","fecha_alta":"2024-12-30"},{"id":"PRY-00360","nombre":"SOLGAS PROY","operadora":"ENTEL","fecha_alta":"2025-01-10"},{"id":"PRY-00361","nombre":"JV ASCENSORES PROY","operadora":"ENTEL","fecha_alta":"2025-01-15"},{"id":"PRY-00362","nombre":"LINDE PERU PROY","operadora":"ENTEL","fecha_alta":"2025-02-18"},{"id":"PRY-00363","nombre":"VERISURE 2","operadora":"ENTEL","fecha_alta":"2025-03-16"}],"contratos":[{"id":"1","cliente":"CAMPO VERDE","contrato":"","fecha_inicio":"2026-03-06","fecha_fin":"","estado":"Pendiente","proveedor":"BITEL"},{"id":"2","cliente":"AURORA","contrato":"N.° 2025-03-CORP-INNOVA-AURORA0824_0309_INT-001.","fecha_inicio":"2024-06-02","fecha_fin":"2027-06-02","estado":"Activo","proveedor":"BITEL"},{"id":"3","cliente":"ESSALUD","contrato":"OS 01/2024/VTPr- INNOVA/ ESSALUD0523_0755_VPN","fecha_inicio":"2024-03-15","fecha_fin":"2027-03-15","estado":"Activo","proveedor":"BITEL"},{"id":"4","cliente":"LOAYZA","contrato":"OS 01/2026/VTPr-INNOVA/HNAL1022_0004_INT-RN01","fecha_inicio":"2026-01-30","fecha_fin":"2026-10-30","estado":"Activo","proveedor":"BITEL"},{"id":"5","cliente":"UNH","contrato":"OS 01/2024/VTPr-INNOVA/UNH0524_0009_INT","fecha_inicio":"2024-10-11","fecha_fin":"2025-10-11","estado":"Activo","proveedor":"BITEL"},{"id":"6","cliente":"Minjudsh_siptrunk","contrato":"N° 2025-08-CORP- INNOVA- MINJUS0222_0004_VPN-RN01-001","fecha_inicio":"2025-08-09","fecha_fin":"2025-12-06","estado":"Revisar","proveedor":"BITEL"},{"id":"7","cliente":"Minjudsh","contrato":"PO 05/2025/VTPr- INNOVA/MINJUSDH","fecha_inicio":"2022-06-10","fecha_fin":"2025-06-15","estado":"Revisar","proveedor":"BITEL"},{"id":"8","cliente":"PRONATEL CAJAMARCA","contrato":"PO 02/2024/VTPr-INNOVA/ EPADSPRONATEL0422_0092_VPN","fecha_inicio":"2023-04-01","fecha_fin":"2025-03-31","estado":"Revisar","proveedor":"BITEL"},{"id":"9","cliente":"PRONATEL_PIURA","contrato":"PO 03/2025/VTPr-INNOVA/PRONATEL0223_0062_VPN-EPAD PIU","fecha_inicio":"2023-09-01","fecha_fin":"2026-09-12","estado":"Activo","proveedor":"BITEL"},{"id":"10","cliente":"PRONATEL_TUMBES","contrato":"PO 02/2025/VTPr-INNOVA/PRONATEL EPAD TUM","fecha_inicio":"2023-10-01","fecha_fin":"2026-07-21","estado":"Revisar","proveedor":"BITEL"},{"id":"11","cliente":"SENASA","contrato":"CONTRATO N° 2026-01-CORP-INNOVA-SENASA0325_0051_ICT-RN01","fecha_inicio":"2026-03-24","fecha_fin":"2026-05-24","estado":"Revisar","proveedor":"BITEL"},{"id":"12","cliente":"MININTER","contrato":"PO 01/2025/VTPr-INNOVA/ MININTER0822_0044_VPN","fecha_inicio":"2023-10-03","fecha_fin":"2026-10-02","estado":"Activo","proveedor":"BITEL"},{"id":"13","cliente":"PGE","contrato":"PO 01/2025/VTPr- INNOVA/PGE0724_0035_VPN","fecha_inicio":"2025-01-02","fecha_fin":"2026-12-13","estado":"Revisar","proveedor":"BITEL"},{"id":"14","cliente":"UNAM","contrato":"N°2025-03-CORP-INNOVA- UNAM1223_0001_ICT -001","fecha_inicio":"2024-01-22","fecha_fin":"2026-01-31","estado":"Revisar","proveedor":"BITEL"},{"id":"15","cliente":"CUNAMAS","contrato":"PO 01/2024/VTPr-INNOVA/CUNAMAS1222_0062_INT-AN01","fecha_inicio":"2024-11-01","fecha_fin":"2026-04-17","estado":"Revisar","proveedor":"BITEL"},{"id":"17","cliente":"SIS AREQUIPA","contrato":"PO 2025-03-CORP-INNOVA- 2SIS1223_0001_INT-RN01-001","fecha_inicio":"2025-03-01","fecha_fin":"2026-06-30","estado":"Revisar","proveedor":"BITEL"},{"id":"18","cliente":"CORPAC","contrato":"OS 01_2025_VTPr-INNOVA_CORPAC0524_0070_VPN","fecha_inicio":"2025-04-15","fecha_fin":"2028-04-15","estado":"Activo","proveedor":"BITEL"},{"id":"19","cliente":"MINEDU COAR","contrato":"N° 2025-04-CORP-INNOVA- MINEDUCOAR1020_0004_INT-RN02-001","fecha_inicio":"2025-04-04","fecha_fin":"2026-04-04","estado":"Revisar","proveedor":"BITEL"},{"id":"20","cliente":"CAJA PIURA","contrato":"N° 2025-05-CORP-INNOVA- CAJAPIURA1223_0340_VPN-AN04-01","fecha_inicio":"2025-05-04","fecha_fin":"2027-01-04","estado":"Revisar","proveedor":"BITEL"},{"id":"21","cliente":"SIS CAJAMARCA","contrato":"PO 2025-03-CORP-INNOVA- 1SIS1223_0001_INT-RN01-001","fecha_inicio":"2025-03-01","fecha_fin":"2026-06-30","estado":"Revisar","proveedor":"BITEL"},{"id":"22","cliente":"MSOUTHER","contrato":"N°2025-08-CORP-INNOVA- MSOUTHERN0723_0038_INT-AN01-001","fecha_inicio":"2025-08-01","fecha_fin":"2026-02-28","estado":"Revisar","proveedor":"BITEL"},{"id":"23","cliente":"PRONATEL EPAD","contrato":"N° 2025_09_CORP_INNOVA_PRONATEL0824_0033_INT_01","fecha_inicio":"2025-09-01","fecha_fin":"2028-06-29","estado":"Activo","proveedor":"BITEL"},{"id":"24","cliente":"RODASUR","contrato":"OS 01/2026/VTPr-INNOVA/RODASUR0725_0012_INT","fecha_inicio":"2026-02-02","fecha_fin":"2027-10-17","estado":"Activo","proveedor":"BITEL"},{"id":"25","cliente":"CORPAC 1024","contrato":"N° 2025_07_CORP_INNOVA_CORPAC1024_0086_VPN _01","fecha_inicio":"2025-07-14","fecha_fin":"2028-07-13","estado":"Activo","proveedor":"BITEL"},{"id":"26","cliente":"MIGRACIONES","contrato":"N°2025-03-CORP-INNOVA- MIGRACIONES0924_0100_VPN-001","fecha_inicio":"2025-03-28","fecha_fin":"2028-03-26","estado":"Activo","proveedor":"BITEL"},{"id":"27","cliente":"DIREICAJ PNP","contrato":"OC000047515","fecha_inicio":"2025-05-09","fecha_fin":"2026-06-09","estado":"Activo","proveedor":"GTD"},{"id":"28","cliente":"DIRIS LIMA NORTE","contrato":"OC000051891","fecha_inicio":"2025-11-05","fecha_fin":"2027-11-05","estado":"Activo","proveedor":"GTD"},{"id":"29","cliente":"DIRIS LIMA SUR","contrato":"OC000047391","fecha_inicio":"2025-05-07","fecha_fin":"2026-05-07","estado":"Activo","proveedor":"GTD"},{"id":"30","cliente":"FONAFE","contrato":"OC000051162","fecha_inicio":"2025-10-09","fecha_fin":"2028-10-09","estado":"Activo","proveedor":"GTD"},{"id":"31","cliente":"INDECOPI","contrato":"OC000038416","fecha_inicio":"2024-04-15","fecha_fin":"2025-04-15","estado":"Revisar","proveedor":"GTD"},{"id":"32","cliente":"INDECOPI","contrato":"OC000049240","fecha_inicio":"2025-07-17","fecha_fin":"2026-07-17","estado":"Activo","proveedor":"GTD"},{"id":"33","cliente":"INGEMMET","contrato":"OC000045990","fecha_inicio":"2025-03-11","fecha_fin":"2027-03-11","estado":"Activo","proveedor":"GTD"},{"id":"34","cliente":"INSUR","contrato":"OC000047155","fecha_inicio":"2025-04-25","fecha_fin":"2027-04-25","estado":"Activo","proveedor":"GTD"},{"id":"35","cliente":"MEF","contrato":"OC000038685","fecha_inicio":"2024-04-23","fecha_fin":"2025-04-23","estado":"Revisar","proveedor":"GTD"},{"id":"36","cliente":"MINEDU","contrato":"OC000050561","fecha_inicio":"2025-09-10","fecha_fin":"2026-09-10","estado":"Activo","proveedor":"GTD"},{"id":"37","cliente":"PNP","contrato":"OC000041667","fecha_inicio":"2024-09-27","fecha_fin":"2025-09-27","estado":"Activo","proveedor":"GTD"},{"id":"38","cliente":"PROGRAMA PAIS","contrato":"OC000041119","fecha_inicio":"2024-09-02","fecha_fin":"2027-09-02","estado":"Activo","proveedor":"GTD"},{"id":"39","cliente":"SAT","contrato":"OC000036510","fecha_inicio":"2024-01-18","fecha_fin":"2027-01-18","estado":"Activo","proveedor":"GTD"},{"id":"40","cliente":"SEDAPAL","contrato":"OC000051874","fecha_inicio":"2025-11-06","fecha_fin":"2028-11-06","estado":"Activo","proveedor":"GTD"},{"id":"41","cliente":"SIMA","contrato":"OC000043685","fecha_inicio":"2024-12-09","fecha_fin":"2027-12-09","estado":"Activo","proveedor":"GTD"},{"id":"42","cliente":"TELEATENTO","contrato":"OC000048285","fecha_inicio":"2025-06-12","fecha_fin":"2026-06-12","estado":"Activo","proveedor":"GTD"},{"id":"43","cliente":"UNIDAD EJECUTORA","contrato":"OC000047463","fecha_inicio":"2025-05-13","fecha_fin":"2026-05-13","estado":"Activo","proveedor":"GTD"},{"id":"44","cliente":"UNITELS","contrato":"OC000041094","fecha_inicio":"2024-09-02","fecha_fin":"2027-09-02","estado":"Activo","proveedor":"GTD"},{"id":"45","cliente":"PACHAMAMA GOURMET S.A.","contrato":"OC4500739232","fecha_inicio":"2024-08-01","fecha_fin":"2025-08-01","estado":"Revisar","proveedor":"CLARO"},{"id":"46","cliente":"ONP","contrato":"OC4500771884","fecha_inicio":"2025-02-01","fecha_fin":"2026-02-01","estado":"Revisar","proveedor":"CLARO"},{"id":"47","cliente":"SUNAFIL","contrato":"OC4500778307","fecha_inicio":"2025-02-01","fecha_fin":"2026-02-01","estado":"Revisar","proveedor":"CLARO"},{"id":"48","cliente":"IRTP","contrato":"OC4500771878","fecha_inicio":"2025-03-01","fecha_fin":"2026-03-01","estado":"Revisar","proveedor":"CLARO"},{"id":"49","cliente":"ONP","contrato":"OC4500779522","fecha_inicio":"2025-04-01","fecha_fin":"2026-04-01","estado":"Revisar","proveedor":"CLARO"},{"id":"50","cliente":"GARCIA BRAGAGNINI","contrato":"OC4500809133","fecha_inicio":"2025-06-01","fecha_fin":"2026-06-01","estado":"Activo","proveedor":"CLARO"},{"id":"51","cliente":"ASOC.PAST.SERV.MEDICO ASIST.JULIACA","contrato":"OC4500819259","fecha_inicio":"2025-08-01","fecha_fin":"2026-08-01","estado":"Activo","proveedor":"CLARO"},{"id":"52","cliente":"EMAPAT","contrato":"OC4500822910","fecha_inicio":"2025-08-01","fecha_fin":"2026-08-01","estado":"Activo","proveedor":"CLARO"},{"id":"53","cliente":"SAGITARIDOS","contrato":"OC4500816080","fecha_inicio":"2025-08-01","fecha_fin":"2026-08-01","estado":"Activo","proveedor":"CLARO"},{"id":"54","cliente":"SUCAMEC","contrato":"OC4500841822","fecha_inicio":"2025-10-01","fecha_fin":"2026-10-01","estado":"Activo","proveedor":"CLARO"},{"id":"55","cliente":"SAN GABAN","contrato":"OC4500873410","fecha_inicio":"2026-03-01","fecha_fin":"2027-03-01","estado":"Activo","proveedor":"CLARO"},{"id":"56","cliente":"UNIVERSIDAD ANTUNEZ DE MAYOLO","contrato":"OC4500884642","fecha_inicio":"2026-04-01","fecha_fin":"2027-04-01","estado":"Activo","proveedor":"CLARO"},{"id":"57","cliente":"PRONATEL","contrato":"OC4500876367","fecha_inicio":"2026-05-01","fecha_fin":"2027-05-01","estado":"Activo","proveedor":"CLARO"},{"id":"58","cliente":"MUÑOZ NAJAR","contrato":"OC4500876475","fecha_inicio":"2026-05-01","fecha_fin":"2027-05-01","estado":"Activo","proveedor":"CLARO"},{"id":"58","cliente":"RENIEC","contrato":"OC00011501","fecha_inicio":"2026-02-16","fecha_fin":"2027-10-16","estado":"Activo","proveedor":"WIN"},{"id":"58","cliente":"UNFV","contrato":"OC00010017","fecha_inicio":"2026-01-19","fecha_fin":"2026-03-19","estado":"Revisar","proveedor":"WIN"},{"id":"59","cliente":"VERISURE","contrato":"35662","fecha_inicio":"2024-12-30","fecha_fin":"2025-12-30","estado":"Activo","proveedor":"ENTEL"},{"id":"60","cliente":"SOLGAS","contrato":"-","fecha_inicio":"2025-01-10","fecha_fin":"2028-01-10","estado":"Activo","proveedor":""},{"id":"61","cliente":"JV ASCENSORES","contrato":"36226","fecha_inicio":"2025-01-15","fecha_fin":"2028-01-15","estado":"Activo","proveedor":"ENTEL"},{"id":"62","cliente":"I-PEX PERU","contrato":"-","fecha_inicio":"2025-01-16","fecha_fin":"2028-01-16","estado":"Activo","proveedor":"ENTEL"},{"id":"63","cliente":"ALICIA GUZMAN DE CASTILLO","contrato":"-","fecha_inicio":"2025-01-29","fecha_fin":"2028-01-29","estado":"Activo","proveedor":"ENTEL"},{"id":"64","cliente":"LIMA TOURS","contrato":"36251","fecha_inicio":"2025-02-06","fecha_fin":"2027-02-06","estado":"Activo","proveedor":"ENTEL"},{"id":"65","cliente":"BANCO SANTANDER","contrato":"36183","fecha_inicio":"2025-02-17","fecha_fin":"2027-02-17","estado":"Activo","proveedor":"ENTEL"},{"id":"66","cliente":"LINDE PERU","contrato":"36393","fecha_inicio":"2025-02-18","fecha_fin":"2028-02-18","estado":"Activo","proveedor":"ENTEL"},{"id":"67","cliente":"LINDE PERU","contrato":"-","fecha_inicio":"2025-02-18","fecha_fin":"2028-02-18","estado":"Activo","proveedor":"ENTEL"},{"id":"68","cliente":"CHINA ROAD AND BRIDGE CORPORATION SUCURSAL PERU","contrato":"36133","fecha_inicio":"2025-02-20","fecha_fin":"2028-02-20","estado":"Activo","proveedor":"ENTEL"},{"id":"69","cliente":"AGRICOLA DON RICARDO","contrato":"36432","fecha_inicio":"2025-02-24","fecha_fin":"2028-02-24","estado":"Activo","proveedor":"ENTEL"},{"id":"70","cliente":"INFRASTRUCTURE & DATABASE CONSULTING","contrato":"-","fecha_inicio":"2025-02-25","fecha_fin":"2028-02-25","estado":"Activo","proveedor":"ENTEL"},{"id":"71","cliente":"TARAPOTO COURIER","contrato":"-","fecha_inicio":"2025-03-03","fecha_fin":"2028-03-03","estado":"Activo","proveedor":"ENTEL"},{"id":"72","cliente":"TOC ASOCIADOS","contrato":"36583","fecha_inicio":"2025-03-13","fecha_fin":"2027-03-13","estado":"Activo","proveedor":"ENTEL"},{"id":"73","cliente":"AEROPUERTOS ANDINOS","contrato":"36071","fecha_inicio":"2025-03-20","fecha_fin":"2027-03-20","estado":"Activo","proveedor":"ENTEL"},{"id":"74","cliente":"GRUPO LA PATRONA","contrato":"36214","fecha_inicio":"2025-04-02","fecha_fin":"2028-04-02","estado":"Activo","proveedor":"ENTEL"},{"id":"75","cliente":"CIMEC INGENIEROS","contrato":"36678","fecha_inicio":"2025-04-22","fecha_fin":"2028-04-22","estado":"Activo","proveedor":"ENTEL"},{"id":"76","cliente":"DESARROLLO VIAL DE LOS ANDES","contrato":"36540","fecha_inicio":"2025-04-23","fecha_fin":"2027-04-23","estado":"Activo","proveedor":"ENTEL"},{"id":"77","cliente":"SANTIAGO RODRIGUEZ BANDA","contrato":"-","fecha_inicio":"2025-04-23","fecha_fin":"2028-04-23","estado":"Activo","proveedor":"ENTEL"},{"id":"78","cliente":"JOSPAC IMPORT","contrato":"-","fecha_inicio":"2025-04-24","fecha_fin":"2028-04-24","estado":"Activo","proveedor":"ENTEL"},{"id":"79","cliente":"ZUZUNAGA & ASSERETO ABOGADOS","contrato":"36588","fecha_inicio":"2025-04-28","fecha_fin":"2028-04-28","estado":"Activo","proveedor":"ENTEL"},{"id":"80","cliente":"JS INDUSTRIAL","contrato":"36047","fecha_inicio":"2025-04-29","fecha_fin":"2028-04-29","estado":"Activo","proveedor":"ENTEL"},{"id":"81","cliente":"CIRCULO A1 SCHOOL","contrato":"36630","fecha_inicio":"2025-04-30","fecha_fin":"2028-04-30","estado":"Activo","proveedor":"ENTEL"},{"id":"82","cliente":"FIESTAS RAMIREZ","contrato":"36570","fecha_inicio":"2025-04-30","fecha_fin":"2028-04-30","estado":"Activo","proveedor":"ENTEL"},{"id":"83","cliente":"DIESTRA","contrato":"-","fecha_inicio":"2025-05-12","fecha_fin":"2026-05-12","estado":"Activo","proveedor":"ENTEL"},{"id":"84","cliente":"MUNICIPALIDAD DISTRITAL DE LA PUNTA","contrato":"36584","fecha_inicio":"2025-05-20","fecha_fin":"2026-05-20","estado":"Activo","proveedor":"ENTEL"},{"id":"85","cliente":"MICHELL Y CIA S A","contrato":"36833","fecha_inicio":"2025-05-20","fecha_fin":"2026-05-20","estado":"Activo","proveedor":"ENTEL"},{"id":"86","cliente":"SUN PHARMACEUTICAL INDUSTRIES","contrato":"36989","fecha_inicio":"2025-06-26","fecha_fin":"2028-06-26","estado":"Activo","proveedor":"ENTEL"},{"id":"87","cliente":"ENVASE LOS PINOS","contrato":"-","fecha_inicio":"2025-06-26","fecha_fin":"2028-06-26","estado":"Activo","proveedor":"ENTEL"},{"id":"88","cliente":"DISTRIBUIDORA DEPORTIVA PUMA","contrato":"-","fecha_inicio":"2025-07-22","fecha_fin":"2027-07-22","estado":"Activo","proveedor":"ENTEL"},{"id":"89","cliente":"ORBES AGRICOLA","contrato":"-","fecha_inicio":"2025-08-20","fecha_fin":"2028-08-20","estado":"Activo","proveedor":"ENTEL"},{"id":"90","cliente":"ELECTRO REGSA","contrato":"-","fecha_inicio":"2025-08-20","fecha_fin":"2028-08-20","estado":"Activo","proveedor":"ENTEL"},{"id":"91","cliente":"ALIGNET","contrato":"-","fecha_inicio":"2025-08-28","fecha_fin":"2028-08-28","estado":"Activo","proveedor":"ENTEL"},{"id":"92","cliente":"XELYNTOR","contrato":"-","fecha_inicio":"2025-08-29","fecha_fin":"2028-08-29","estado":"Activo","proveedor":"ENTEL"},{"id":"93","cliente":"SAVAR AGENTES DE ADUANA","contrato":"-","fecha_inicio":"2025-09-14","fecha_fin":"2028-09-14","estado":"Activo","proveedor":"ENTEL"},{"id":"94","cliente":"CHECHRIZA","contrato":"-","fecha_inicio":"2025-09-19","fecha_fin":"2028-09-19","estado":"Activo","proveedor":"ENTEL"},{"id":"95","cliente":"GABEL","contrato":"0000037446, 0000037445","fecha_inicio":"2025-09-23","fecha_fin":"2028-09-23","estado":"Activo","proveedor":"ENTEL"},{"id":"96","cliente":"REPRESENTACIONES MARTIN","contrato":"-","fecha_inicio":"2025-09-23","fecha_fin":"2028-09-23","estado":"Activo","proveedor":"ENTEL"},{"id":"97","cliente":"AROMAS DEL PERU","contrato":"-","fecha_inicio":"2025-09-26","fecha_fin":"2028-09-26","estado":"Activo","proveedor":"ENTEL"},{"id":"98","cliente":"EL HUEVO DE ORO","contrato":"-","fecha_inicio":"2025-10-10","fecha_fin":"2028-10-10","estado":"Activo","proveedor":"ENTEL"},{"id":"99","cliente":"SOCIEDAD AMIGOS MECANICOS INDUSTRIALES","contrato":"-","fecha_inicio":"2025-10-16","fecha_fin":"2028-10-16","estado":"Activo","proveedor":"ENTEL"},{"id":"100","cliente":"ASCENSORES Telefonia","contrato":"-","fecha_inicio":"2025-10-24","fecha_fin":"2028-10-24","estado":"Activo","proveedor":"ENTEL"},{"id":"101","cliente":"ARBRAYSS LASER","contrato":"","fecha_inicio":"2025-11-11","fecha_fin":"2028-11-10","estado":"Activo","proveedor":"ENTEL"},{"id":"102","cliente":"KRISTAL GROUP","contrato":"","fecha_inicio":"2025-11-14","fecha_fin":"2028-11-14","estado":"Activo","proveedor":"ENTEL"},{"id":"103","cliente":"LA VIGA","contrato":"","fecha_inicio":"2025-11-19","fecha_fin":"2028-11-19","estado":"Activo","proveedor":"ENTEL"},{"id":"104","cliente":"COPISERVICE","contrato":"","fecha_inicio":"2025-11-20","fecha_fin":"2028-11-20","estado":"Activo","proveedor":"ENTEL"},{"id":"105","cliente":"RENTAEQUIPOS LEASING PERU","contrato":"","fecha_inicio":"2025-11-20","fecha_fin":"2028-11-20","estado":"Activo","proveedor":"ENTEL"},{"id":"106","cliente":"SENCICO monit","contrato":"","fecha_inicio":"2025-11-26","fecha_fin":"2026-05-25","estado":"Activo","proveedor":"ENTEL"},{"id":"107","cliente":"VANGUARD LOGISTICS SERVICES PERU","contrato":"","fecha_inicio":"2025-11-27","fecha_fin":"2028-11-27","estado":"Activo","proveedor":"ENTEL"},{"id":"108","cliente":"TACTICAL IT","contrato":"","fecha_inicio":"2025-12-16","fecha_fin":"2028-12-16","estado":"Activo","proveedor":"ENTEL"},{"id":"109","cliente":"LAT PERU","contrato":"","fecha_inicio":"2025-12-29","fecha_fin":"2028-12-29","estado":"Activo","proveedor":"ENTEL"}],"proyectos":[{"codigo":"PRY-00534_LIND","operadora":"ENTEL","cliente":"LINDE PERU","oc":"0000036393","inicio_soporte":"2025-02-18","fin_soporte":"2028-02-18","inicio_licencia":"2025-02-17","fin_licencia":"2026-02-17","estado_licencia":"Por vencer"},{"codigo":"PRY-00556_BANC","operadora":"ENTEL","cliente":"BANCO SANTANDER","oc":"0000036183","inicio_soporte":"2025-02-17","fin_soporte":"2027-02-17","inicio_licencia":"2025-02-05","fin_licencia":"2028-02-05","estado_licencia":"Vigente"},{"codigo":"PRY-00636_VERI","operadora":"ENTEL","cliente":"VERISURE","oc":"0000035662","inicio_soporte":"2024-12-30","fin_soporte":"2025-12-30","inicio_licencia":"","fin_licencia":"","estado_licencia":"Vencido"},{"codigo":"PRY-00646_JV A","operadora":"ENTEL","cliente":"JV ASCENSORES","oc":"0000036226","inicio_soporte":"2025-01-15","fin_soporte":"2028-01-15","inicio_licencia":"2025-01-19","fin_licencia":"2026-01-19","estado_licencia":"Por vencer"},{"codigo":"PRY-00800_FINA","operadora":"ENTEL","cliente":"FINANCOOP","oc":"0000036691","inicio_soporte":"2025-04-24","fin_soporte":"2028-04-05","inicio_licencia":"2025-04-24","fin_licencia":"2026-04-24","estado_licencia":"Por vencer"},{"codigo":"PRY-00690_TOC","operadora":"ENTEL","cliente":"TOC ASOCIADOS","oc":"0000036583","inicio_soporte":"2025-03-13","fin_soporte":"2027-03-13","inicio_licencia":"2025-03-12","fin_licencia":"2028-03-12","estado_licencia":"Vigente"},{"codigo":"PRY-00511_LA P","operadora":"ENTEL","cliente":"GRUPO LA PATRONA","oc":"0000036214","inicio_soporte":"2025-04-02","fin_soporte":"2028-04-02","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00515_AERO","operadora":"ENTEL","cliente":"AEROPUERTOS ANDINOS","oc":"36071","inicio_soporte":"2025-03-20","fin_soporte":"2027-03-20","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00707_CIRC","operadora":"ENTEL","cliente":"CIRCULO A1 SCHOOL","oc":"0000036630","inicio_soporte":"2025-04-30","fin_soporte":"2028-04-30","inicio_licencia":"2025-04-30","fin_licencia":"2028-04-30","estado_licencia":"Vigente"},{"codigo":"PRY-00516_JSIN","operadora":"ENTEL","cliente":"JS INDUSTRIAL","oc":"0000036047","inicio_soporte":"2025-04-29","fin_soporte":"2028-04-29","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00696_DESA","operadora":"ENTEL","cliente":"DESARROLLO VIAL DE LOS ANDES","oc":"0000036540","inicio_soporte":"2025-04-23","fin_soporte":"2027-04-23","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00533_CENT","operadora":"ENTEL","cliente":"CENTRO MEDONC (CLINICA ZIEGLER)","oc":"0000036398","inicio_soporte":"2025-05-02","fin_soporte":"2028-05-02","inicio_licencia":"2025-05-30","fin_licencia":"2026-05-30","estado_licencia":"Por vencer"},{"codigo":"PRY-00699_FIES","operadora":"ENTEL","cliente":"FIESTAS RAMIREZ","oc":"0000036570","inicio_soporte":"2025-04-30","fin_soporte":"2028-04-30","inicio_licencia":"2025-05-29","fin_licencia":"2026-05-29","estado_licencia":"Por vencer"},{"codigo":"PRY-00725_JOSP","operadora":"ENTEL","cliente":"JOSPAC IMPORT","oc":"","inicio_soporte":"2025-04-24","fin_soporte":"2028-04-24","inicio_licencia":"2025-06-15","fin_licencia":"2026-06-15","estado_licencia":"Por vencer"},{"codigo":"PRY-00710_CIME","operadora":"ENTEL","cliente":"CIMEC INGENIEROS","oc":"0000036678","inicio_soporte":"2025-04-22","fin_soporte":"2028-04-22","inicio_licencia":"2025-04-22","fin_licencia":"2026-04-22","estado_licencia":"Por vencer"},{"codigo":"PRY-00726_SANT","operadora":"ENTEL","cliente":"SANTIAGO RODRIGUEZ BANDA","oc":"","inicio_soporte":"2025-04-23","fin_soporte":"2028-04-23","inicio_licencia":"2025-05-11","fin_licencia":"2026-05-11","estado_licencia":"Por vencer"},{"codigo":"PRY-00520_SIOM","operadora":"ENTEL","cliente":"SIOM PERU","oc":"36301","inicio_soporte":"2025-05-07","fin_soporte":"2028-05-07","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00700_ZUZU","operadora":"ENTEL","cliente":"ZUZUNAGA & ASSERETO ABOGADOS","oc":"0000036588","inicio_soporte":"2025-04-28","fin_soporte":"2028-04-28","inicio_licencia":"2025-04-29","fin_licencia":"2026-04-29","estado_licencia":"Por vencer"},{"codigo":"PRY-00694_DIES","operadora":"ENTEL","cliente":"DIESTRA","oc":"","inicio_soporte":"2025-05-12","fin_soporte":"2026-05-12","inicio_licencia":"2025-05-12","fin_licencia":"2026-05-12","estado_licencia":"Vencido"},{"codigo":"PRY-00507_EVER","operadora":"ENTEL","cliente":"EVERGREEN","oc":"","inicio_soporte":"2025-05-28","fin_soporte":"2027-05-28","inicio_licencia":"2025-06-16","fin_licencia":"2026-06-16","estado_licencia":"Por vencer"},{"codigo":"PRY-00709_MUNI","operadora":"ENTEL","cliente":"MUNICIPALIDAD DISTRITAL DE LA PUNTA","oc":"0000036584","inicio_soporte":"2025-05-20","fin_soporte":"2026-05-20","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00555_LIMA","operadora":"ENTEL","cliente":"LIMA TOURS","oc":"0000036251","inicio_soporte":"2025-02-06","fin_soporte":"2027-02-06","inicio_licencia":"2025-01-27","fin_licencia":"2028-01-27","estado_licencia":"Vigente"},{"codigo":"PRY-00798_VIAJ","operadora":"ENTEL","cliente":"VIAJES ROSARIO FLOREZ","oc":"0000037005","inicio_soporte":"2025-07-05","fin_soporte":"2028-07-05","inicio_licencia":"2025-07-07","fin_licencia":"2026-07-07","estado_licencia":"Vigente"},{"codigo":"PRY-00740_SOLG","operadora":"ENTEL","cliente":"SOLGAS","oc":"","inicio_soporte":"2025-01-10","fin_soporte":"2028-01-10","inicio_licencia":"2025-01-14","fin_licencia":"2026-01-14","estado_licencia":"Por vencer"},{"codigo":"PRY-00532_HAWK","operadora":"ENTEL","cliente":"HAWK LOGISTICS SOLUTIONS","oc":"","inicio_soporte":"2025-06-12","fin_soporte":"2026-06-12","inicio_licencia":"2025-06-17","fin_licencia":"2026-06-17","estado_licencia":"Por vencer"},{"codigo":"PRY-00560_UNIV","operadora":"ENTEL","cliente":"UNIVERSIDAD CIENTIFICA DEL SUR (UCS)","oc":"","inicio_soporte":"2025-01-21","fin_soporte":"2026-07-21","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00645_I PE","operadora":"ENTEL","cliente":"I-PEX PERU","oc":"","inicio_soporte":"2025-01-16","fin_soporte":"2028-01-16","inicio_licencia":"2025-01-19","fin_licencia":"2026-01-19","estado_licencia":"Por vencer"},{"codigo":"PRY-00553_ALIC","operadora":"ENTEL","cliente":"ALICIA GUZMAN DE CASTILLO","oc":"","inicio_soporte":"2025-01-29","fin_soporte":"2028-01-29","inicio_licencia":"2025-02-27","fin_licencia":"2026-02-27","estado_licencia":"Por vencer"},{"codigo":"PRY-00554_SUPE","operadora":"ENTEL","cliente":"SUPEFINA PERU","oc":"0000036168","inicio_soporte":"2025-02-05","fin_soporte":"2027-02-05","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00796_AGRI","operadora":"ENTEL","cliente":"AGRICOLA DON RICARDO","oc":"0000036432","inicio_soporte":"2025-02-24","fin_soporte":"2028-02-24","inicio_licencia":"2025-02-27","fin_licencia":"2026-02-27","estado_licencia":"Por vencer"},{"codigo":"PRY-00537_CHRD","operadora":"ENTEL","cliente":"CHINA ROAD AND BRIDGE","oc":"0000036133","inicio_soporte":"2025-02-20","fin_soporte":"2028-02-20","inicio_licencia":"2025-02-20","fin_licencia":"2026-02-20","estado_licencia":"Por vencer"},{"codigo":"PRY-00538_TARA","operadora":"ENTEL","cliente":"TARAPOTO COURIER","oc":"","inicio_soporte":"2025-03-03","fin_soporte":"2028-03-03","inicio_licencia":"2025-03-07","fin_licencia":"2026-03-07","estado_licencia":"Por vencer"},{"codigo":"PRY-00797_DIST","operadora":"ENTEL","cliente":"DISTRIBUIDORA DEPORTIVA PUMA","oc":"","inicio_soporte":"2025-07-22","fin_soporte":"2027-07-22","inicio_licencia":"2025-07-22","fin_licencia":"2026-07-22","estado_licencia":"Vigente"},{"codigo":"PRY-00539_MINH","operadora":"ENTEL","cliente":"MICHELL Y CIA","oc":"0000036833","inicio_soporte":"2025-05-20","fin_soporte":"2026-05-20","inicio_licencia":"2025-05-23","fin_licencia":"2026-05-23","estado_licencia":"Por vencer"},{"codigo":"PRY-00540_SUNC","operadora":"ENTEL","cliente":"SUN PHARMACEUTICAL","oc":"0000036989","inicio_soporte":"2025-06-26","fin_soporte":"2028-06-26","inicio_licencia":"2025-07-03","fin_licencia":"2028-07-03","estado_licencia":"Vigente"},{"codigo":"PRY-00541_ALIN","operadora":"ENTEL","cliente":"ALIGNET","oc":"","inicio_soporte":"2025-08-28","fin_soporte":"2028-08-28","inicio_licencia":"2025-09-02","fin_licencia":"2028-09-02","estado_licencia":"Vigente"},{"codigo":"PRY-00542_XELY","operadora":"ENTEL","cliente":"XELYNTOR","oc":"","inicio_soporte":"2025-08-29","fin_soporte":"2028-08-29","inicio_licencia":"2025-09-04","fin_licencia":"2028-09-04","estado_licencia":"Vigente"},{"codigo":"PRY-00543_ORBE","operadora":"ENTEL","cliente":"ORBES AGRICOLA","oc":"","inicio_soporte":"2025-08-20","fin_soporte":"2028-08-20","inicio_licencia":"2025-08-22","fin_licencia":"2028-08-22","estado_licencia":"Vigente"},{"codigo":"PRY-00544_ELEC","operadora":"ENTEL","cliente":"ELECTRO REGSA","oc":"","inicio_soporte":"2025-08-20","fin_soporte":"2028-08-20","inicio_licencia":"2025-08-25","fin_licencia":"2028-08-25","estado_licencia":"Vigente"},{"codigo":"PRY-00545_SAVA","operadora":"ENTEL","cliente":"SAVAR AGENTES DE ADUANA","oc":"","inicio_soporte":"2025-09-14","fin_soporte":"2028-09-14","inicio_licencia":"2025-09-17","fin_licencia":"2028-09-17","estado_licencia":"Vigente"},{"codigo":"PRY-00546_CHEC","operadora":"ENTEL","cliente":"CHECHRIZA","oc":"","inicio_soporte":"2025-09-19","fin_soporte":"2028-09-19","inicio_licencia":"2025-09-23","fin_licencia":"2028-09-23","estado_licencia":"Vigente"},{"codigo":"PRY-00547_GABE","operadora":"ENTEL","cliente":"GABEL","oc":"0000037446","inicio_soporte":"2025-09-23","fin_soporte":"2028-09-23","inicio_licencia":"2025-09-25","fin_licencia":"2028-09-25","estado_licencia":"Vigente"},{"codigo":"PRY-00548_REPR","operadora":"ENTEL","cliente":"REPRESENTACIONES MARTIN","oc":"","inicio_soporte":"2025-09-23","fin_soporte":"2028-09-23","inicio_licencia":"2025-09-26","fin_licencia":"2028-09-26","estado_licencia":"Vigente"},{"codigo":"PRY-00549_AROM","operadora":"ENTEL","cliente":"AROMAS DEL PERU","oc":"","inicio_soporte":"2025-09-26","fin_soporte":"2028-09-26","inicio_licencia":"2025-09-30","fin_licencia":"2028-09-30","estado_licencia":"Vigente"},{"codigo":"PRY-00550_HUEV","operadora":"ENTEL","cliente":"EL HUEVO DE ORO","oc":"","inicio_soporte":"2025-10-10","fin_soporte":"2028-10-10","inicio_licencia":"2025-10-14","fin_licencia":"2028-10-14","estado_licencia":"Vigente"},{"codigo":"PRY-00552_SAMI","operadora":"ENTEL","cliente":"SOCIEDAD AMIGOS MECANICOS","oc":"","inicio_soporte":"2025-10-16","fin_soporte":"2028-10-16","inicio_licencia":"2025-10-20","fin_licencia":"2028-10-20","estado_licencia":"Vigente"},{"codigo":"PRY-00561_ASCL","operadora":"ENTEL","cliente":"ASCENSORES TELEFONIA","oc":"","inicio_soporte":"2025-10-24","fin_soporte":"2028-10-24","inicio_licencia":"2025-10-28","fin_licencia":"2028-10-28","estado_licencia":"Vigente"},{"codigo":"PRY-00562_ARBL","operadora":"ENTEL","cliente":"ARBRAYSS LASER","oc":"","inicio_soporte":"2025-11-11","fin_soporte":"2028-11-10","inicio_licencia":"2025-11-14","fin_licencia":"2028-11-14","estado_licencia":"Vigente"},{"codigo":"PRY-00563_KRIS","operadora":"ENTEL","cliente":"KRISTAL GROUP","oc":"","inicio_soporte":"2025-11-14","fin_soporte":"2028-11-14","inicio_licencia":"2025-11-17","fin_licencia":"2028-11-17","estado_licencia":"Vigente"},{"codigo":"PRY-00564_LAVI","operadora":"ENTEL","cliente":"LA VIGA","oc":"","inicio_soporte":"2025-11-19","fin_soporte":"2028-11-19","inicio_licencia":"2025-11-22","fin_licencia":"2028-11-22","estado_licencia":"Vigente"},{"codigo":"PRY-00565_COPI","operadora":"ENTEL","cliente":"COPISERVICE","oc":"","inicio_soporte":"2025-11-20","fin_soporte":"2028-11-20","inicio_licencia":"2025-11-24","fin_licencia":"2028-11-24","estado_licencia":"Vigente"},{"codigo":"PRY-00566_RENT","operadora":"ENTEL","cliente":"RENTAEQUIPOS LEASING","oc":"","inicio_soporte":"2025-11-20","fin_soporte":"2028-11-20","inicio_licencia":"2025-11-25","fin_licencia":"2028-11-25","estado_licencia":"Vigente"},{"codigo":"PRY-00567_SENC","operadora":"ENTEL","cliente":"SENCICO MONIT","oc":"","inicio_soporte":"2025-11-26","fin_soporte":"2026-05-25","inicio_licencia":"2025-11-28","fin_licencia":"2026-05-28","estado_licencia":"Por vencer"},{"codigo":"PRY-00568_VANG","operadora":"ENTEL","cliente":"VANGUARD LOGISTICS","oc":"","inicio_soporte":"2025-11-27","fin_soporte":"2028-11-27","inicio_licencia":"2025-11-30","fin_licencia":"2028-11-30","estado_licencia":"Vigente"},{"codigo":"PRY-00569_TACT","operadora":"ENTEL","cliente":"TACTICAL IT","oc":"","inicio_soporte":"2025-12-16","fin_soporte":"2028-12-16","inicio_licencia":"2025-12-19","fin_licencia":"2028-12-19","estado_licencia":"Vigente"},{"codigo":"PRY-00570_LATP","operadora":"ENTEL","cliente":"LAT PERU","oc":"","inicio_soporte":"2025-12-29","fin_soporte":"2028-12-29","inicio_licencia":"2026-01-02","fin_licencia":"2029-01-02","estado_licencia":"Vigente"},{"codigo":"PRY-00571_CAMV","operadora":"BITEL","cliente":"CAMPO VERDE","oc":"","inicio_soporte":"2026-03-06","fin_soporte":"","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00572_AURO","operadora":"BITEL","cliente":"AURORA","oc":"","inicio_soporte":"2024-06-02","fin_soporte":"2027-06-02","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00573_CORP","operadora":"BITEL","cliente":"CORPAC","oc":"","inicio_soporte":"2025-04-15","fin_soporte":"2028-04-15","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00574_CORP2","operadora":"BITEL","cliente":"CORPAC 1024","oc":"","inicio_soporte":"2025-07-14","fin_soporte":"2028-07-13","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00575_MIGR","operadora":"BITEL","cliente":"MIGRACIONES","oc":"","inicio_soporte":"2025-03-28","fin_soporte":"2028-03-26","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00576_DIRE","operadora":"ON","cliente":"DIREICAJ PNP","oc":"OC000047515","inicio_soporte":"2025-05-09","fin_soporte":"2026-06-09","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00577_DILN","operadora":"ON","cliente":"DIRIS LIMA NORTE","oc":"OC000051891","inicio_soporte":"2025-11-05","fin_soporte":"2027-11-05","inicio_licencia":"","fin_licencia":"","estado_licencia":"sin licencia"},{"codigo":"PRY-00578_DILS","operadora":"ON","cliente":"DIRIS LIMA SUR","oc":"OC000047391","inicio_soporte":"2025-05-07","fin_soporte":"2026-05-07","inicio_licencia":"","fin_licencia":"","estado_licencia":"Vencido"},{"codigo":"PRY-00579_FONA","operadora":"ON","cliente":"FONAFE","oc":"OC000051162","inicio_soporte":"2025-10-09","fin_soporte":"2028-10-09","inicio_licencia":"","fin_licencia":"","estado_licencia":"Vencido"}]};
+
+function daysDiff(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  return Math.round((d - TODAY) / 86400000);
+}
+
+function riskScore(item, type) {
+  if (type === 'contrato') {
+    const days = daysDiff(item.fecha_fin);
+    if (item.estado === 'Revisar') return Math.min(95, 60 + Math.max(0, (180 - (days||999)) / 3));
+    if (item.estado === 'Pendiente') return 85;
+    if (days !== null && days < 90) return Math.min(80, 50 + (90 - days) / 2);
+    return 15;
+  } else {
+    if (item.estado_licencia === 'Vencido') return 95;
+    if (item.estado_licencia === 'Por vencer') {
+      const days = daysDiff(item.fin_licencia);
+      return Math.min(85, 55 + Math.max(0, (180 - (days||999)) / 3));
+    }
+    if (item.estado_licencia === 'sin licencia') return 40;
+    return 10;
+  }
+}
+
+function riskColor(v) {
+  if (v >= 70) return '#E24B4A';
+  if (v >= 40) return '#F4A823';
+  return '#1D9E75';
+}
+
+function badgeCT(e) {
+  if (e==='Activo') return 'b-activo';
+  if (e==='Revisar') return 'b-revisar';
+  return 'b-pendiente';
+}
+function badgeLic(e) {
+  if (e==='Vigente') return 'b-vigente';
+  if (e==='Por vencer') return 'b-porvencer';
+  if (e==='Vencido') return 'b-vencido';
+  return 'b-sinlic';
+}
+
+function daysTag(days) {
+  if (days === null) return '<span style="color:var(--color-text-secondary);">—</span>';
+  if (days < 0) return `<span style="color:#E24B4A;font-weight:500;">Vencido ${Math.abs(days)}d</span>`;
+  if (days <= 60) return `<span style="color:#E24B4A;font-weight:500;">${days}d ⚠</span>`;
+  if (days <= 120) return `<span style="color:#F4A823;font-weight:500;">${days}d</span>`;
+  return `<span style="color:var(--color-text-secondary);">${days}d</span>`;
+}
+
+let ctSort = {k:'',d:1}, prySort = {k:'',d:1}, clSort = {k:'',d:1};
+
+function sortCT(k) { ctSort.d = ctSort.k===k ? -ctSort.d : 1; ctSort.k=k; renderContratos(); }
+function sortPRY(k) { prySort.d = prySort.k===k ? -prySort.d : 1; prySort.k=k; renderProyectos(); }
+function sortCL(k) { clSort.d = clSort.k===k ? -clSort.d : 1; clSort.k=k; renderClientes(); }
+
+function renderContratos() {
+  const prov = document.getElementById('f-ct-prov').value;
+  const est = document.getElementById('f-ct-est').value;
+  const q = document.getElementById('f-ct-q').value.toLowerCase();
+  let data = DB.contratos.filter(x =>
+    (!prov || x.proveedor===prov) &&
+    (!est || x.estado===est) &&
+    (!q || x.cliente.toLowerCase().includes(q))
+  );
+  if (ctSort.k) data.sort((a,b) => {
+    const av=a[ctSort.k], bv=b[ctSort.k];
+    return (typeof av==='number'?(av-bv):String(av||'').localeCompare(String(bv||'')))*ctSort.d;
+  });
+  document.getElementById('ct-count').textContent = data.length;
+  document.getElementById('ct-body').innerHTML = data.map(x => {
+    const days = daysDiff(x.fecha_fin);
+    return `<tr>
+      <td style="color:var(--color-text-secondary);">${x.id}</td>
+      <td><strong style="font-size:11px;">${x.cliente}</strong></td>
+      <td style="color:var(--color-text-secondary);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${x.contrato}">${x.contrato||'—'}</td>
+      <td>${x.fecha_inicio||'—'}</td>
+      <td>${x.fecha_fin||'—'}</td>
+      <td><span class="badge ${badgeCT(x.estado)}">${x.estado}</span></td>
+      <td>${x.proveedor||'—'}</td>
+      <td>${daysTag(days)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderProyectos() {
+  const op = document.getElementById('f-pry-op').value;
+  const lic = document.getElementById('f-pry-lic').value;
+  const q = document.getElementById('f-pry-q').value.toLowerCase();
+  let data = DB.proyectos.filter(x =>
+    (!op || x.operadora===op) &&
+    (!lic || x.estado_licencia===lic) &&
+    (!q || x.cliente.toLowerCase().includes(q))
+  );
+  if (prySort.k) data.sort((a,b) => {
+    const av=a[prySort.k], bv=b[prySort.k];
+    return (typeof av==='number'?(av-bv):String(av||'').localeCompare(String(bv||'')))*prySort.d;
+  });
+  document.getElementById('pry-count').textContent = data.length;
+  document.getElementById('pry-body').innerHTML = data.map(x => {
+    const days = daysDiff(x.fin_licencia);
+    return `<tr>
+      <td style="color:var(--color-text-secondary);font-size:10px;">${x.codigo}</td>
+      <td><strong style="font-size:11px;">${x.cliente}</strong></td>
+      <td>${x.operadora}</td>
+      <td>${x.inicio_soporte||'—'}</td>
+      <td>${x.fin_soporte||'—'}</td>
+      <td>${x.fin_licencia||'—'}</td>
+      <td><span class="badge ${badgeLic(x.estado_licencia)}">${x.estado_licencia}</span></td>
+      <td>${daysTag(days)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderClientes() {
+  const op = document.getElementById('f-cl-op').value;
+  const q = document.getElementById('f-cl-q').value.toLowerCase();
+  let data = DB.clientes.filter(x =>
+    (!op || x.operadora===op) &&
+    (!q || x.nombre.toLowerCase().includes(q) || x.id.toLowerCase().includes(q))
+  );
+  if (clSort.k) data.sort((a,b) => String(a[clSort.k]||'').localeCompare(String(b[clSort.k]||''))*clSort.d);
+  document.getElementById('cl-count').textContent = data.length;
+  document.getElementById('cl-body').innerHTML = data.map(x =>
+    `<tr><td style="color:var(--color-text-secondary);">${x.id}</td><td><strong style="font-size:11px;">${x.nombre}</strong></td><td>${x.operadora}</td><td>${x.fecha_alta}</td></tr>`
+  ).join('');
+}
+
+function renderPredictivo() {
+  const topCT = [...DB.contratos].map(x=>({...x,score:Math.round(riskScore(x,'contrato'))})).sort((a,b)=>b.score-a.score).slice(0,10);
+  const topLic = [...DB.proyectos].filter(x=>x.estado_licencia!=='sin licencia').map(x=>({...x,score:Math.round(riskScore(x,'licencia'))})).sort((a,b)=>b.score-a.score).slice(0,10);
+
+  document.getElementById('pred-contratos').innerHTML = topCT.map(x => {
+    const col = riskColor(x.score);
+    return `<div class="pred-row"><div class="pred-name" title="${x.cliente}">${x.cliente}</div><div class="pred-track"><div class="pred-fill" style="width:${x.score}%;background:${col};"><span>${x.score}%</span></div></div><div class="pred-pct" style="color:${col};">${x.score}%</div></div>`;
+  }).join('');
+
+  document.getElementById('pred-licencias').innerHTML = topLic.map(x => {
+    const col = riskColor(x.score);
+    return `<div class="pred-row"><div class="pred-name" title="${x.cliente}">${x.cliente}</div><div class="pred-track"><div class="pred-fill" style="width:${x.score}%;background:${col};"><span>${x.score}%</span></div></div><div class="pred-pct" style="color:${col};">${x.score}%</div></div>`;
+  }).join('');
+}
+
+function initCharts() {
+  const isDark = matchMedia('(prefers-color-scheme:dark)').matches;
+  const gridC = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const tickC = '#888780';
+
+  function mkLegend(id, items) {
+    document.getElementById(id).innerHTML = items.map(i =>
+      `<span><span class="dot" style="background:${i.c};"></span>${i.l} <strong>${i.v}</strong></span>`
+    ).join('');
+  }
+
+  new Chart(document.getElementById('ch-cestado'), {
+    type:'doughnut',
+    data:{labels:['Activo','Revisar','Pendiente'],datasets:[{data:[96,13,1],backgroundColor:['#1D9E75','#F4A823','#00AEEF'],borderWidth:2,borderColor:'transparent'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.parsed}`}}}}
+  });
+  mkLegend('leg-c-estado',[{c:'#1D9E75',l:'Activo',v:96},{c:'#F4A823',l:'Revisar',v:13},{c:'#00AEEF',l:'Pendiente',v:1}]);
+
+  new Chart(document.getElementById('ch-pestado'), {
+    type:'doughnut',
+    data:{labels:['Vigente','Por vencer','Sin licencia','Vencido'],datasets:[{data:[30,24,20,5],backgroundColor:['#1D9E75','#F4A823','#888780','#E24B4A'],borderWidth:2,borderColor:'transparent'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.parsed}`}}}}
+  });
+  mkLegend('leg-p-estado',[{c:'#1D9E75',l:'Vigente',v:30},{c:'#F4A823',l:'Por vencer',v:24},{c:'#888780',l:'Sin licencia',v:20},{c:'#E24B4A',l:'Vencido',v:5}]);
+
+  new Chart(document.getElementById('ch-opclientes'), {
+    type:'bar',
+    data:{labels:['ENTEL','ON','BITEL','CLARO'],datasets:[{data:[117,26,18,8],backgroundColor:['#00AEEF','#0A2E5A','#1D9E75','#F4A823'],borderRadius:5,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` Clientes: ${c.parsed.y}`}}},scales:{x:{grid:{display:false},ticks:{color:tickC}},y:{grid:{color:gridC},ticks:{color:tickC},beginAtZero:true}}}
+  });
+  mkLegend('leg-op-c',[{c:'#00AEEF',l:'ENTEL',v:117},{c:'#0A2E5A',l:'ON',v:26},{c:'#1D9E75',l:'BITEL',v:18},{c:'#F4A823',l:'CLARO',v:8}]);
+
+  new Chart(document.getElementById('ch-opcontrato'), {
+    type:'bar',
+    data:{labels:['ENTEL','BITEL','GTD','CLARO','WIN'],datasets:[{data:[50,25,18,14,2],backgroundColor:['#00AEEF','#1D9E75','#534AB7','#F4A823','#E24B4A'],borderRadius:5,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` Contratos: ${c.parsed.y}`}}},scales:{x:{grid:{display:false},ticks:{color:tickC}},y:{grid:{color:gridC},ticks:{color:tickC},beginAtZero:true}}}
+  });
+  mkLegend('leg-op-ct',[{c:'#00AEEF',l:'ENTEL',v:50},{c:'#1D9E75',l:'BITEL',v:25},{c:'#534AB7',l:'GTD',v:18},{c:'#F4A823',l:'CLARO',v:14},{c:'#E24B4A',l:'WIN',v:2}]);
+
+  const altasMeses = {'2024-06':2,'2024-08':1,'2024-09':1,'2024-10':2,'2024-11':3,'2024-12':10,'2025-01':9,'2025-02':8,'2025-03':13,'2025-04':9,'2025-05':16,'2025-06':15,'2025-07':3,'2025-08':5,'2025-09':15,'2025-10':15,'2025-11':11,'2025-12':4,'2026-01':10,'2026-02':3,'2026-03':4,'2026-04':2,'2026-05':2};
+  const altasL = Object.keys(altasMeses).map(k=>MESES[parseInt(k.split('-')[1])-1]+' '+k.split('-')[0].slice(2));
+  const altasV = Object.values(altasMeses);
+  new Chart(document.getElementById('ch-altas'), {
+    type:'line',
+    data:{labels:altasL,datasets:[{data:altasV,borderColor:'#00AEEF',backgroundColor:'rgba(0,174,239,0.08)',tension:0.4,pointRadius:3,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` Nuevos clientes: ${c.parsed.y}`}}},scales:{x:{grid:{display:false},ticks:{color:tickC,maxRotation:45,autoSkip:false,font:{size:9}}},y:{grid:{color:gridC},ticks:{color:tickC},beginAtZero:true}}}
+  });
+
+  // Vencimientos contratos próximos 12 meses
+  const vencMeses = {};
+  for(let i=0;i<12;i++){
+    const d=new Date(TODAY);d.setMonth(d.getMonth()+i);
+    vencMeses[`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`]=0;
+  }
+  DB.contratos.forEach(x=>{
+    if(!x.fecha_fin) return;
+    const k=x.fecha_fin.slice(0,7);
+    if(vencMeses[k]!==undefined) vencMeses[k]++;
+  });
+  const vL=Object.keys(vencMeses).map(k=>MESES[parseInt(k.split('-')[1])-1]+' '+k.split('-')[0].slice(2));
+  const vV=Object.values(vencMeses);
+  new Chart(document.getElementById('ch-venc'), {
+    type:'bar',
+    data:{labels:vL,datasets:[{data:vV,backgroundColor:vV.map((_,i)=>i<3?'#E24B4A':i<6?'#F4A823':'#00AEEF'),borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` Contratos vencen: ${c.parsed.y}`}}},scales:{x:{grid:{display:false},ticks:{color:tickC,font:{size:10}}},y:{grid:{color:gridC},ticks:{color:tickC,stepSize:1},beginAtZero:true}}}
+  });
+
+  // Soporte vencimiento proyectos
+  const sopMeses = {};
+  for(let i=0;i<12;i++){
+    const d=new Date(TODAY);d.setMonth(d.getMonth()+i);
+    sopMeses[`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`]=0;
+  }
+  DB.proyectos.forEach(x=>{
+    if(!x.fin_soporte) return;
+    const k=x.fin_soporte.slice(0,7);
+    if(sopMeses[k]!==undefined) sopMeses[k]++;
+  });
+  const sL=Object.keys(sopMeses).map(k=>MESES[parseInt(k.split('-')[1])-1]+' '+k.split('-')[0].slice(2));
+  const sV=Object.values(sopMeses);
+  new Chart(document.getElementById('ch-sop'), {
+    type:'bar',
+    data:{labels:sL,datasets:[{data:sV,backgroundColor:'#534AB7',borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` Proyectos: ${c.parsed.y}`}}},scales:{x:{grid:{display:false},ticks:{color:tickC,font:{size:10}}},y:{grid:{color:gridC},ticks:{color:tickC,stepSize:1},beginAtZero:true}}}
+  });
+}
+
+function showPane(id) {
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('active');
+  event.target.closest('.tab').classList.add('active');
+  if(id==='predictivo') renderPredictivo();
+}
+
+initCharts();
+renderContratos();
+renderProyectos();
+renderClientes();
+</script>
